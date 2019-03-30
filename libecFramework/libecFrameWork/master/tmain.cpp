@@ -4,16 +4,54 @@
 #include <iostream>
 #include "libecFramework.h"
 
+void callBack1(int value)
+{
+	std::cout << "callback1 triggered : " << value << std::endl;
+}
+
+void callBack2(int value)
+{
+	std::cout << "callback2 triggered : " << value << std::endl;
+}
+
+void callBack3(std::string str)
+{
+	std::cout << "callback3 triggered : " << str.c_str() << std::endl;
+}
+
 int main()
 {
-    std::cout << "Hello World!\n";
+	std::cout << "Test case 1 running" << std::endl;;
 
-	ecFrameWork<int> test(5);
+	ecFrameWork<int> test1(5);
 
-	test.SetValue(7);
+	test1.Subscribe(callBack1);
 
-	int a = test.GetValue();
-	std::cout << a << std::endl;
+	test1.Subscribe(callBack2);
+
+	test1.SetValue(7);
+
+	std::cout << "Test case 2 running" << std::endl;
+
+	ecFrameWork<int> test2(3, 1, 10);
+
+	test2.Subscribe(callBack1);
+
+	test2.SetValue(5);
+
+	test2.SetValue(0);
+
+	test2.SetValue(5);
+
+	test2.SetValue(10);
+
+	//ecFrameWork<std::string> strTest("hello");
+
+	//strTest.Subscribe(callBack3);
+
+	//strTest.SetValue("world");
+
+	//std::cout << test.GetValue() << std::endl;
 	system("pause");
 }
 
