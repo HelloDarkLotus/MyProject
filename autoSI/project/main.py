@@ -3,6 +3,7 @@ import configparser
 import requests
 from bs4 import BeautifulSoup
 import re
+import git
 
 class AutoSI(object):
     def __init__(self):
@@ -13,6 +14,7 @@ class AutoSI(object):
         self.baseUrl = ""
         self.basepath = ""
         self.targetpath = ""
+        self.gitrepo = ""
         self.session = ""
 
     def getConfigPath(self):
@@ -29,6 +31,7 @@ class AutoSI(object):
         self.baseUrl = config.get("RedmineInfo", "baseurl")
         self.basepath = config.get("CompileInfo", "basepath")
         self.targetpath = config.get("CompileInfo", "targetpath")
+        self.gitrepo = config.get("CompileInfo", "gitrepo")
 
     #login module
     def loginMethod(self):
@@ -65,8 +68,13 @@ class AutoSI(object):
         r = self.session.get(projectUrl)
         print(r.text)
 
+    def getLatestCodeOfGit(self):
+        localCodePath = self.targetpath.replace("<version>", self.versionNumber)
+        git.Repo.clone_from(self.gitrepo, localCodePath)
+
     #compile module
     def compileMethod(self):
+        self.getLatestCodeOfGit()
         pass
 
     #message module
