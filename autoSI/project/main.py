@@ -16,6 +16,7 @@ class AutoSI(object):
         self.targetpath = ""
         self.gitrepo = ""
         self.session = ""
+        self.headers = ""
 
     def getConfigPath(self):
         return os.getcwd() + r"\config.ini"
@@ -33,40 +34,72 @@ class AutoSI(object):
         self.targetpath = config.get("CompileInfo", "targetpath")
         self.gitrepo = config.get("CompileInfo", "gitrepo")
 
+    def genHeader(self):
+        accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+        accept_encoding = 'gzip,deflate,sdch'
+        accept_language = 'zh-CN,zh;q=0.8'
+        user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36'
+
+        self.headers = {
+            'Accept' : accept,
+            'Accept-Encoding' : accept_encoding,
+            'Accept-Language' : accept_language,
+            'User-Agent' : user_agent,
+        }
+
     #login module
     def loginMethod(self):
-        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'
         token = self.getLoginToken()
         if token != None:
-            headers = {
-                'User-Agent' : user_agent,
+            post_data = {
                 'username' : self.userName,
                 'password' : self.passWord,
-                'authenticity_token' : token
+                'authenticity_token' : token,
             }
             #login redmine
-            r = self.session.get(self.baseUrl + r'login', headers=headers)
+            #because redmine login success will redirect, so should forbidden it
+            r = self.session.post(self.baseUrl + r'login', data=post_data, headers=headers, allow_redirects=False)
 
     #get token
     def getLoginToken(self):
         loginUrl = self.baseUrl + r'login'
         self.session = requests.Session()
-        r = self.session.get(loginUrl)
+        r = self.session.get(loginUrl, headers=self.headers)
         soup = BeautifulSoup(r.text, 'lxml')
-        for div in soup.find_all(id="login-form"):
+        return soup.find('input', {'name' : 'authenticity_token'})['value']
+        '''for div in soup.find_all(id="login-form"):
             inputRslt = div.find_all("input")
             if inputRslt != None:
                 for input in inputRslt:
                     name = input.get("name")
                     if name == "authenticity_token":
-                        return input.get("value")
+                        return input.get("value")'''
 
     #spider module
     def spiderMethod(self):
-        projectUrl = self.baseUrl + r'projects/' + self.projectName
-        print(projectUrl)
-        r = self.session.get(projectUrl)
-        print(r.text)
+        roadmapUrl = self.baseUrl + r'projects/' + self.projectName.lower() + r'/roadmap'
+        r = self.session.get(roadmapUrl)
+        soup = BeautifulSoup(r.text, 'lxml')
+        href = soup.find('a', {'name' : self.versionNumber})['href']
+        latestSIUrl = r'http://192.168.100.103' + href
+
+        #get all tickets information
+        r = self.session.get(latestSIUrl)
+        soup = BeautifulSoup(r.text, 'lxml')
+        bugNumLst = list()
+        for issue in soup.find_all('tr', {'class' : 'issue hascontextmenu'}):
+            bugNumLst.append(issue.find('input')['value'])
+
+        #enter into each tickets and get its information
+        for bugNum in bugNumLst:
+            url = self.baseUrl + r'issues/' + bugNum
+            r = self.session.get(url)
+            soup = BeautifulSoup(r.text, 'lxml')
+            bugTtl = soup.find('div', {'class' : 'subject'}).find('h3').text
+            bugSts = soup.find('div', {'class' : 'status attribute'}).find('div', {'class' : 'value'}).text
+            bugPrssr = soup.find('div', {'class' : 'assigned-to attribute'}).find('a', {'class' : 'user active'}).text
+            bugStrt = soup.find('div', {'class' : 'start-date attribute'}).find('div', {'class' : 'value'}).text
+            bugPrgrss = soup.find('div', {'class' : 'progress attribute'}).find('p', {'class' : 'percent'}).text
 
     def getLatestCodeOfGit(self):
         localCodePath = self.targetpath.replace("<version>", self.versionNumber)
