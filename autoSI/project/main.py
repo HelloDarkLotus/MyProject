@@ -3,7 +3,12 @@ import configparser
 import requests
 from bs4 import BeautifulSoup
 import re
-import git
+#import git
+import csv
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+#import pandas as pd
 
 class AutoSI(object):
     def __init__(self):
@@ -58,7 +63,7 @@ class AutoSI(object):
             }
             #login redmine
             #because redmine login success will redirect, so should forbidden it
-            r = self.session.post(self.baseUrl + r'login', data=post_data, headers=headers, allow_redirects=False)
+            r = self.session.post(self.baseUrl + r'login', data=post_data, headers=self.headers, allow_redirects=False)
 
     #get token
     def getLoginToken(self):
@@ -91,6 +96,8 @@ class AutoSI(object):
             bugNumLst.append(issue.find('input')['value'])
 
         #enter into each tickets and get its information
+        bugInfo = list()
+        stsLst = list()
         for bugNum in bugNumLst:
             url = self.baseUrl + r'issues/' + bugNum
             r = self.session.get(url)
@@ -100,15 +107,61 @@ class AutoSI(object):
             bugPrssr = soup.find('div', {'class' : 'assigned-to attribute'}).find('a', {'class' : 'user active'}).text
             bugStrt = soup.find('div', {'class' : 'start-date attribute'}).find('div', {'class' : 'value'}).text
             bugPrgrss = soup.find('div', {'class' : 'progress attribute'}).find('p', {'class' : 'percent'}).text
+            bugInfo.append((bugNum, bugTtl, bugSts, bugPrssr, bugStrt, bugPrgrss))
+            stsLst.append(bugSts)
 
-    def getLatestCodeOfGit(self):
+        '''with open('tmp.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow([r'Redmine票号', r'问题标题', r'问题状态', r'问题处理人', r'开始时间', r'处理进度'])
+            for bugItem in bugInfo:
+                writer.writerows([bugItem])'''
+
+        self.genPieChart(stsLst)
+
+    def genPieChart(self, *stsLst):
+        newNum = 0
+        workNum = 0
+        assignedNum = 0
+        resolvedNum = 0
+        verifiedNum = 0
+        closeNum = 0
+        pendingNum = 0
+        rejectNum = 0
+        for sts in stsLst:
+            if sts == "Working":
+                workNum += 1
+            elif sts == "Assigned":
+                assignedNum += 1
+            elif sts == "Resolved":
+                resolvedNum += 1
+            elif sts == "Verified":
+                verifiedNum += 1
+            elif sts == "Closed":
+                closeNum += 1
+            elif sts == "Pending":
+                pendingNum += 1
+            elif sts == "Rejected":
+                rejectNum += 1
+            else:
+                newNum += 1
+        
+        labels = ['New','Assigned','Working','Resolved','Verified','Closed','Pending','Rejected']
+        values = [newNum,assignedNum,workNum,resolvedNum,verifiedNum,closeNum,pendingNum,rejectNum]
+        explode = [0,0,0,0.1,0,0,0,0]
+        plt.pie(values,explode=explode,labels=labels,autopct='%1.1f%%',shadow=False,startangle=180)
+        plt.rcParams['font.sans-serif'] = ['SimHei']
+        plt.title(r"问题状态百分比")
+        plt.legend(loc="upper right",fontsize=10,bbox_to_anchor=(1.2,1.0))
+        plt.show()
+
+    '''def getLatestCodeOfGit(self):
         localCodePath = self.targetpath.replace("<version>", self.versionNumber)
-        git.Repo.clone_from(self.gitrepo, localCodePath)
+        git.Repo.clone_from(self.gitrepo, localCodePath)'''
 
     #compile module
-    def compileMethod(self):
+    '''def compileMethod(self):
         self.getLatestCodeOfGit()
-        pass
+        pass'''
 
     #message module
     def notifyMethod(self):
@@ -122,5 +175,6 @@ if __name__ == "__main__":
     obj = AutoSI()
     cfg = obj.getConfigPath()
     obj.configMethod(cfg)
+    obj.genHeader()
     obj.loginMethod()
     obj.spiderMethod()
