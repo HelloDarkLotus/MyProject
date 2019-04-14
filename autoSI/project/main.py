@@ -116,44 +116,6 @@ class AutoSI(object):
             for bugItem in bugInfo:
                 writer.writerows([bugItem])'''
 
-        self.genPieChart(stsLst)
-
-    def genPieChart(self, *stsLst):
-        newNum = 0
-        workNum = 0
-        assignedNum = 0
-        resolvedNum = 0
-        verifiedNum = 0
-        closeNum = 0
-        pendingNum = 0
-        rejectNum = 0
-        for sts in stsLst:
-            if sts == "Working":
-                workNum += 1
-            elif sts == "Assigned":
-                assignedNum += 1
-            elif sts == "Resolved":
-                resolvedNum += 1
-            elif sts == "Verified":
-                verifiedNum += 1
-            elif sts == "Closed":
-                closeNum += 1
-            elif sts == "Pending":
-                pendingNum += 1
-            elif sts == "Rejected":
-                rejectNum += 1
-            else:
-                newNum += 1
-        
-        labels = ['New','Assigned','Working','Resolved','Verified','Closed','Pending','Rejected']
-        values = [newNum,assignedNum,workNum,resolvedNum,verifiedNum,closeNum,pendingNum,rejectNum]
-        explode = [0,0,0,0.1,0,0,0,0]
-        plt.pie(values,explode=explode,labels=labels,autopct='%1.1f%%',shadow=False,startangle=180)
-        plt.rcParams['font.sans-serif'] = ['SimHei']
-        plt.title(r"问题状态百分比")
-        plt.legend(loc="upper right",fontsize=10,bbox_to_anchor=(1.2,1.0))
-        plt.show()
-
     '''def getLatestCodeOfGit(self):
         localCodePath = self.targetpath.replace("<version>", self.versionNumber)
         git.Repo.clone_from(self.gitrepo, localCodePath)'''
@@ -171,10 +133,82 @@ class AutoSI(object):
     def analysisMethod(self):
         pass
 
+class DataAnalysis(object):
+    def __init__(self, csvFile):
+        self.file = csvFile
+        self.stsTbl = dict()
+        self.totalNum = 0
+
+    def genDataDict(self):
+        with open(self.file) as f:
+            handler = csv.reader(f)
+            next(handler)
+            self.totalNum = len(list(handler))
+            print(self.totalNum)
+            for row in handler:
+                if 'New' in row:
+                    self.stsTbl[r'New'] += 1
+                elif 'Assigned' in row:
+                    self.stsTbl[r'Assigned'] += 1
+                elif 'Working' in row:
+                    self.stsTbl[r'Working'] += 1
+                elif 'Resolved' in row:
+                    self.stsTbl[r'Resolved'] += 1
+                elif 'Rejected' in row:
+                    self.stsTbl[r'Rejected'] += 1
+                elif 'Verified' in row:
+                    self.stsTbl[r'Verified'] += 1
+                elif 'Closed' in row:
+                    self.stsTbl[r'Closed'] += 1
+                else:
+                    self.stsTbl[r'Pending'] += 1
+
+
+    def IntegrationSuccessRate(self):
+        resolvedNum, otherNum = 0, 0
+        next(self.handler)
+        for row in self.handler:
+            if 'Resolved' in row:
+                resolvedNum += 1
+            else:
+                otherNum += 1
+        
+        labels = ['Resolved','Others']
+        values = [resolvedNum,otherNum]
+        explode = [0.1,0]
+        plt.pie(values,explode=explode,labels=labels,autopct='%1.1f%%',shadow=False,startangle=120)
+        plt.rcParams['font.sans-serif'] = ['SimHei']
+        plt.title(r"集成成功率")
+        plt.legend(loc="upper right",fontsize=10,bbox_to_anchor=(1.2,1.0))
+        plt.show()
+
+    def EffectiveBugRate(self):
+        rejectedNum, otherNum = 0, 0
+        next(self.handler)
+        for row in self.handler:
+            if 'Rejected' in row:
+                rejectedNum += 1
+            else:
+                otherNum += 1
+
+        labels = ['Rejected','Others']
+        values = [rejectedNum, otherNum]
+        explode = [0.1,0]
+        plt.pie(values,explode=explode,labels=labels,autopct='%1.1f%%',shadow=False,startangle=120)
+        plt.rcParams['font.sans-serif'] = ['SimHei']
+        plt.title(r"有效BUG率")
+        plt.legend(loc="upper right",fontsize=10,bbox_to_anchor=(1.2,1.0))
+        plt.show()                
+
 if __name__ == "__main__":
-    obj = AutoSI()
+    '''obj = AutoSI()
     cfg = obj.getConfigPath()
     obj.configMethod(cfg)
     obj.genHeader()
     obj.loginMethod()
-    obj.spiderMethod()
+    obj.spiderMethod()'''
+
+    daObj = DataAnalysis(r'tmp.csv')
+    daObj.genDataDict()
+    #daObj.IntegrationSuccessRate()
+    #daObj.EffectiveBugRate()

@@ -1,0 +1,29 @@
+Redmine票号,问题标题,问题状态,问题处理人,开始时间,处理进度
+14870,[HMI Control Service]残余作业对应-编码-关于触发Geofencing与DW的状态关系,Resolved,Guan Kerong 关可蓉,2019-04-01,80%
+14921,[系统测试][测试准备]Debug命令需求_FD07_DataFormat,Resolved,Zhang Tingting 张 婷婷,2019-04-03,80%
+14955,anywarp中debug宏引起的告警需要清除,Resolved,Wang Dou 王豆,2019-04-03,80%
+14966,[ADJ]残余作业对应-代码-共享内存更新时间点检,Resolved,Zhang Shiwei 张 世为,2019-04-04,80%
+15000,[ShareOBJ]残余作业对应-编码-初始化时ShareOBJ写往sharedinfo的值应该首先赋值为默认值，,Resolved,Guan Kerong 关可蓉,2019-04-09,80%
+15019,[HTTP Manager]残余作业对应-代码_debug代码优化,Resolved,Zhang Tingting 张 婷婷,2019-04-10,80%
+15021,修改备份到文件中数据的处理逻辑,Resolved,Chen Jinjin 陈 津津,2019-04-10,80%
+15030,[HMI Control Service]残余作业对应-编码-MCAN消息发送失败导致Geofencing的debug命令触发失败,Resolved,Guan Kerong 关可蓉,2019-04-10,80%
+14862,[单体测试][详细设计测试][ADJ] 对SYS_STOP_SRV_REQ消息，回复SysCrl的参数错误,Verified,Gong Ruoli 龚若力,2019-03-29,80%
+15031,[SI集成]修改代码中版本号为67,Verified,Gong Ruoli 龚若力,2019-04-11,80%
+14500,[ADJ] ICON数据未配置导致频道列表更新失败,Verified,Liu Shuang 刘 双,2019-03-14,80%
+14652,[BackupCtrl]URL中的region和partition值未被恢复到ShareOBJ,Pending,Chen Jinjin 陈 津津,2019-03-20,20%
+14673,[需求跟踪对应][ADJ]测试Menu control flag时转动车速按钮不能使channel灰化,Pending,Gong Ruoli 龚若力,2019-03-21,0%
+14866,[ADJ]上传xml中的dcm_id未显示,Verified,Liu Shuang 刘 双,2019-04-01,80%
+14907,[MQTT]将MQTTConnectionTimeOut的值更改为2后，结果仍显示connectTimeout = 5。,Verified,Liu Shuang 刘 双,2019-04-02,80%
+14908,[ADJ]上传xml中的rss值显示错误,Rejected,Liu Shuang 刘 双,2019-04-02,0%
+14917,[ADJ]通过发送SMS_Notification消息实现频道自动下载失败,Closed,Liu Shuang 刘 双,2019-04-02,100%
+14918,[ADJ]Vehicle Data的状态改变时向IVC发送值不正确,Pending,Yu Huiming 余 慧明,2019-04-02,0%
+14945,[ConnMgr]网线(模拟TCU)未连接的场合，显示列表仍更新成功。,Pending,Zhang Tingting 张 婷婷,2019-04-03,0%
+14948,[Carwins][I Agree]I Agree选择Decline之后进入carwings没有再次弹出I Agree,Pending,Zhang Tingting 张 婷婷,2019-04-03,0%
+14952,[ADJ]实行动作为contentlist（显示模式text）的频道无法播放,Pending,Zhang Shiwei 张 世为,2019-04-03,0%
+14953,[ADJ]服务器不配置频道数据，只配置xml数据时，可以迁移到播放画面,Verified,Liu Shuang 刘 双,2019-04-03,80%
+14954,[ADJ]重复下载频道时，画面黑屏,Pending,Gong Ruoli 龚若力,2019-04-03,0%
+14956,[MQTT]JSON数据ividdv字段，在Part认证完成后没有打印出来。,Verified,Liu Shuang 刘 双,2019-04-03,80%
+14957,"[ADJ]下载一个喜爱频道数据,可以迁移到播放画面，但显示内容为空",Pending,Zhang Shiwei 张 世为,2019-04-03,0%
+14958,[Carwins][I Agree]进入Vehicle Data transmission settin之后按BACK键可以返回的问题,Closed,Liu Shuang 刘 双,2019-04-04,100%
+14959,[Carwins][I Agree]I Agree未选择时进入carwings没有再次弹出I Agree选择画面,Pending,Zhang Tingting 张 婷婷,2019-04-04,0%
+14970,[Backup]服务器根証书，IVI密钥，証明書（PartCert）、csr、ulr、备份失败。,Pending,Chen Jinjin 陈 津津,2019-04-04,20%
